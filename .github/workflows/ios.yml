@@ -26,10 +26,6 @@ jobs:
           mv temp_templates/templates/* ~/.local/share/godot/export_templates/4.2.2.stable/
           rm -rf temp_templates templates.tpz
 
-      - name: Import Assets (Low Memory)
-        run: |
-          godot --headless --editor --quit
-
       - name: Export Project for iOS
         run: |
           mkdir -p build/ios
