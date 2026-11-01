@@ -13,19 +13,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Godot Engine
+      - name: Setup Godot
         uses: chickensoft-games/setup-godot@v1
         with:
-          version: 4.3.0
+          version: 4.2.2
 
-      - name: Create export directory
-        run: mkdir -p build/ios
+      - name: Export Project for iOS
+        run: |
+          mkdir -p build/ios
+          godot --headless --export-release "iOS" build/ios/game.zip
 
-      - name: Export iOS Project
-        run: godot --headless --export-release "iOS" build/ios/SuperMario.xcodeproj
-
-      - name: Upload Xcode Project
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-xcode-project
+          name: ios-export
           path: build/ios/
