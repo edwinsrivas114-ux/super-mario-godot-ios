@@ -13,10 +13,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Godot Engine & Templates
+      - name: Setup Godot Engine
         uses: chickensoft-games/setup-godot@v1
         with:
           version: 4.2.2
+
+      - name: Cache Godot Imported Assets
+        uses: actions/cache@v4
+        with:
+          path: .godot/
+          key: godot-cache-${{ hashFiles('project.godot') }}
+          restore-keys: |
+            godot-cache-
 
       - name: Export Project for iOS
         run: |
