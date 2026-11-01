@@ -18,13 +18,15 @@ jobs:
         with:
           version: 4.2.2
 
-      - name: Cache Godot Imported Assets
+      - name: Restore Godot Cache
         uses: actions/cache@v4
         with:
-          path: .godot/
-          key: godot-cache-${{ hashFiles('project.godot') }}
+          path: |
+            .godot/imported
+            .godot/editor
+          key: godot-ios-cache-${{ github.run_id }}
           restore-keys: |
-            godot-cache-
+            godot-ios-cache-
 
       - name: Export Project for iOS
         run: |
