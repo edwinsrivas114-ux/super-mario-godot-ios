@@ -18,10 +18,11 @@ jobs:
         with:
           version: 4.3.0
 
+      - name: Create export directory
+        run: mkdir -p build/ios
+
       - name: Export iOS Project
-        run: |
-          mkdir -p build/ios
-          godot --headless --export-release "iOS" build/ios/SuperMario.xcodeproj || true
+        run: godot --headless --export-release "iOS" build/ios/SuperMario.xcodeproj
 
       - name: Upload Xcode Project
         uses: actions/upload-artifact@v4
