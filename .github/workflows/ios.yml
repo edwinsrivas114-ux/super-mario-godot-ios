@@ -1,0 +1,30 @@
+name: Build Godot for iOS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Godot Engine
+        uses: chickensoft-games/setup-godot@v1
+        with:
+          version: 4.3.0
+
+      - name: Export iOS Project
+        run: |
+          mkdir -p build/ios
+          godot --headless --export-release "iOS" build/ios/SuperMario.xcodeproj || true
+
+      - name: Upload Xcode Project
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-xcode-project
+          path: build/ios/
