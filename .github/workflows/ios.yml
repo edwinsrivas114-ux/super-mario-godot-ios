@@ -6,35 +6,25 @@ on:
   workflow_dispatch:
 
 jobs:
-      build-ios:
-        runs-on: macos-latest
+  build-ios:
+    runs-on: macos-latest
 
-        steps:
-          - name: Checkout Repository
-            uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-          - name: Download Godot Export Tools
-            run: |
-              curl -L https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_macos.universal.zip -o godot.zip
-              unzip -q godot.zip
-              mv Godot.app/Contents/MacOS/Godot /usr/local/bin/godot
-              chmod +x /usr/local/bin/godot
+      - name: Setup Godot Engine
+        uses: chickensoft-games/setup-godot@v1
+        with:
+          version: 4.2.2
 
-          - name: Download iOS Export Templates
-            run: |
-              mkdir -p ~/Library/Application\ Support/Godot/export_templates/4.2..2.stable/
-              curl -L https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz -o templates.tpz
-              unzip -q templates.tpz -d ~/Library/Application\ Support/Godot/export_templates/4.2.2.stable/
-              # Ajustar nombre de la carpeta de plantillas si es necesario
-              mv ~/Library/Application\ Support/Godot/export_templates/4.2.2.stable/templates ~/Library/Application\ Support/Godot/export_templates/4.2.2.stable/export_templates.cfg || true
+      - name: Export Project for iOS
+        run: |
+          mkdir -p build/ios
+          godot --headless --export-release "iOS" build/ios/SuperMario.xcodeproj
 
-          - name: Export Project for iOS
-            run: |
-              mkdir -p build/ios
-              godot --headless --export-release "iOS" build/ios/SuperMario.xcodeproj
-
-          - name: Upload Xcode Project Artifact
-            uses: actions/upload-artifact@v4
-            with:
-              name: ios-xcode-project
-              path: build/ios/
+      - name: Upload Xcode Project Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-xcode-project
+          path: build/ios/
