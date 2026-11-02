@@ -1,0 +1,52 @@
+name: Build iOS App with Xcode
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-xcode:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build Xcode Project
+        run: |
+          set -e
+          XCODEPROJ=$(find . -name "*.xcodeproj" -maxdepth 3 | head -n 1)
+          echo "Proyecto encontrado: $XCODEPROJ"
+          
+          # Compilar la aplicación sin requerir firmas de certificado de Apple
+          xcodebuild -project "$XCODEPROJ" \
+                     -scheme "SMB1R" \
+                     -configuration Release \
+                     -sdk iphoneos \
+                     CODE_SIGN_IDENTITY="" \
+                     CODE_SIGNING_REQUIRED=NO \
+                     CODE_SIGNING_ALLOWED=NO \
+                     build
+
+      - name: Compress App Bundle
+        run: |
+          mkdir -p output
+          BUILD_DIR=$(find ~/Library/Developer/Xcode/DerivedData -name "*.app" | head -n 1)
+          if [ -d "$BUILD_DIR" ]; then
+            cd "$(dirname "$BUILD_DIR")"
+            zip -r ~/work/super-mario-godot-ios/super-mario-godot-ios/output/SMB1R-iOS.zip "$(basename "$BUILD_DIR")"
+          fi
+
+      - name: Upload iOS App Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: smb1r-ios-build
+          path: output/SMB1R-iOS.zip
